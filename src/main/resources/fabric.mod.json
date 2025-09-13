@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "directorscut",
+  "version": "${version}",
+  "name": "DirectorsCut",
+  "description": "Camera Control Client-Side Mod",
+  "authors": ["litkoit1003"],
+  "contact": {
+    "sources": "https://github.com/litkoit1003/Directors-Cut",
+    "issues": "https://github.com/litkoit1003/Directors-Cut/issues"
+  },
+  "license": "GPL-3.0",
+  "icon": "icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "org.litkoit.directorscut.client.DirectorscutClient"
+    ],
+    "main": [
+      "org.litkoit.directorscut.Directorscut"
+    ]
+  },
+  "mixins": [
+    "directorscut.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
