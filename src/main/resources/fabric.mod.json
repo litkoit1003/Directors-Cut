@@ -9,14 +9,11 @@
     "sources": "https://github.com/litkoit1003/Directors-Cut",
     "issues": "https://github.com/litkoit1003/Directors-Cut/issues"
   },
-  "license": "GPL-3.0",
+  "license": "MIT License",
   "icon": "icon.png",
   "environment": "client",
   "entrypoints": {
     "client": [
-      "org.litkoit.directorscut.client.DirectorscutClient"
-    ],
-    "main": [
       "org.litkoit.directorscut.Directorscut"
     ]
   },

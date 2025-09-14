@@ -1,10 +1,11 @@
 package org.litkoit.directorscut;
 
-import net.fabricmc.api.ModInitializer;
+import net.fabricmc.api.ClientModInitializer;
 
-public class Directorscut implements ModInitializer {
+public class Directorscut implements ClientModInitializer {
 
     @Override
-    public void onInitialize() {
+    public void onInitializeClient() {
+
     }
 }
