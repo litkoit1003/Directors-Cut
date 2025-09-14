@@ -12,7 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class GameRendererMixin {
     @Inject(at = @At("HEAD"), method = "bobView", cancellable = true)
     private void cancelBobView(PoseStack poseStack, float partialTicks, CallbackInfo ci) {
-        if (CameraConfig.detachedCameraActiveIndex != 0) {
+        CameraConfig config = CameraConfig.HANDLER.instance();
+        if (config.detachedCameraActiveIndex != 0) {
             ci.cancel();
         }
     }

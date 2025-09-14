@@ -1,4 +1,11 @@
 {
   "key.directorscut.toggle": "Toggle camera",
-  "key.categories.directorscut": "Director's Cut"
+  "key.categories.directorscut": "Director's Cut",
+
+  "gui.directorscut.config.title": "Director's Cut Config",
+  "gui.directorscut.config.main_category": "Director's Cut",
+  "gui.directorscut.config.main_group": "General settings",
+  "gui.directorscut.config.main_group_description": "General settings for Director's Cut mod.",
+  "gui.directorscut.config.stream_mode_option": "Automatically switch stream mode",
+  "gui.directorscut.config.stream_mode_option_description": "Automatically switches stream mode when you connect to the camera."
 }

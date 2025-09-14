@@ -7,8 +7,9 @@ import net.minecraft.network.chat.Component;
 public class DetachedCameraControl {
     public static void activateFixedCamera(Minecraft mc) {
         if (mc.player == null) return;
+        CameraConfig config = CameraConfig.HANDLER.instance();
 
-        CameraConfig.detachedCameraActiveIndex = 1;
+        config.detachedCameraActiveIndex = 1;
 
         mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
 
@@ -21,7 +22,8 @@ public class DetachedCameraControl {
     }
 
     public static void deactivateFixedCamera(Minecraft mc) {
-        CameraConfig.detachedCameraActiveIndex = 0;
+        CameraConfig config = CameraConfig.HANDLER.instance();
+        config.detachedCameraActiveIndex = 0;
 
         mc.options.setCameraType(CameraType.FIRST_PERSON);
 
@@ -34,7 +36,8 @@ public class DetachedCameraControl {
     }
 
     public static void toggleFixedCamera(Minecraft mc) {
-        if (CameraConfig.detachedCameraActiveIndex != 0) {
+        CameraConfig config = CameraConfig.HANDLER.instance();
+        if (config.detachedCameraActiveIndex != 0) {
             deactivateFixedCamera(mc);
         } else {
             activateFixedCamera(mc);

@@ -11,22 +11,25 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class CameraTypeMixin {
     @Inject(method = "isFirstPerson", at = @At("HEAD"), cancellable = true)
     private void overrideIsFirstPerson(CallbackInfoReturnable<Boolean> cir) {
-        if (CameraConfig.detachedCameraActiveIndex != 0) {
+        CameraConfig config = CameraConfig.HANDLER.instance();
+        if (config.detachedCameraActiveIndex != 0) {
             cir.setReturnValue(false);
         }
     }
 
     @Inject(method = "isMirrored", at = @At("HEAD"), cancellable = true)
     private void overrideIsMirrored(CallbackInfoReturnable<Boolean> cir) {
-        if (CameraConfig.detachedCameraActiveIndex != 0) {
+        CameraConfig config = CameraConfig.HANDLER.instance();
+        if (config.detachedCameraActiveIndex != 0) {
             cir.setReturnValue(false);
         }
     }
 
     @Inject(method = "cycle", at = @At("HEAD"))
     private void onCameraCycle(CallbackInfoReturnable<CameraType> cir) {
-        if (CameraConfig.detachedCameraActiveIndex != 0) {
-            CameraConfig.detachedCameraActiveIndex = 0;
+        CameraConfig config = CameraConfig.HANDLER.instance();
+        if (config.detachedCameraActiveIndex != 0) {
+            config.detachedCameraActiveIndex = 0;
         }
     }
 }

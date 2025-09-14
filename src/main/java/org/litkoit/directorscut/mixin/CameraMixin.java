@@ -10,21 +10,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Camera.class)
 public abstract class CameraMixin {
-
-    @Shadow
-    private float xRot;
-    @Shadow
-    private float yRot;
-
     @Inject(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setPosition(DDD)V", shift = At.Shift.AFTER))
     private void applyFixedCameraTransform(CallbackInfo ci) {
-        if (CameraConfig.detachedCameraActiveIndex != 0) {
-            setPosition(CameraConfig.detachedCameras.get(CameraConfig.detachedCameraActiveIndex).x(),
-                    CameraConfig.detachedCameras.get(CameraConfig.detachedCameraActiveIndex).y(),
-                    CameraConfig.detachedCameras.get(CameraConfig.detachedCameraActiveIndex).z());
+        CameraConfig config = CameraConfig.HANDLER.instance();
 
-            setRotation(CameraConfig.detachedCameras.get(CameraConfig.detachedCameraActiveIndex).yRot(),
-                    CameraConfig.detachedCameras.get(CameraConfig.detachedCameraActiveIndex).xRot());
+        if (config.detachedCameraActiveIndex != 0) {
+            setPosition(config.detachedCameras.get(config.detachedCameraActiveIndex).x(),
+                    config.detachedCameras.get(config.detachedCameraActiveIndex).y(),
+                    config.detachedCameras.get(config.detachedCameraActiveIndex).z());
+
+            setRotation(config.detachedCameras.get(config.detachedCameraActiveIndex).yRot(),
+                    config.detachedCameras.get(config.detachedCameraActiveIndex).xRot());
         }
     }
 

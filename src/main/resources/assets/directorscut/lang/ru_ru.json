@@ -1,4 +1,11 @@
 {
   "key.directorscut.toggle": "Переключить камеру",
-  "key.categories.directorscut": "Director's Cut"
+  "key.categories.directorscut": "Director's Cut",
+
+  "gui.directorscut.config.title": "Настройки Director's Cut",
+  "gui.directorscut.config.main_category": "Director's Cut",
+  "gui.directorscut.config.main_group": "Основные параметры",
+  "gui.directorscut.config.main_group_description": "Основные параметры мода Director's Cut.",
+  "gui.directorscut.config.stream_mode_option": "Автоматически переключать режим стрима",
+  "gui.directorscut.config.stream_mode_option_description": "Автоматически переключает режим стрима когда вы подключаетесь к камере."
 }
