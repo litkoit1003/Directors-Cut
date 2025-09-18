@@ -1,6 +1,7 @@
 plugins {
     id 'fabric-loom' version '1.11-SNAPSHOT'
     id 'maven-publish'
+    id "com.modrinth.minotaur" version "2.+"
 }
 
 version = project.mod_version
@@ -10,6 +11,21 @@ base {
     archivesName = project.archives_base_name
 }
 
+modrinth {
+    token = System.getenv("MODRINTH_TOKEN")
+    projectId = "directors-cut"
+    versionNumber = project.mod_version
+    versionType = project.mod_version_type
+    uploadFile = jar
+    gameVersions = ["1.21.4"]
+    loaders = ["fabric"]
+    dependencies {
+        // The scope can be `required`, `optional`, `incompatible`, or `embedded`
+        required.project "fabric-api"
+        required.project "yacl"
+        optional.project "modmenu"
+    }
+}
 
 repositories {
     maven {
@@ -20,16 +36,20 @@ repositories {
         name = "Terraformers"
         url = "https://maven.terraformersmc.com/"
     }
+    maven {
+        name = "Gegy"
+        url = uri("https://maven.gegy.dev")
+    }
 }
 
 dependencies {
-    // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}"
     modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+    include(modImplementation("dev.lambdaurora:spruceui:${project.spruceui_version}"))
 }
 
 processResources {
@@ -47,10 +67,6 @@ processResources {
 
 def targetJavaVersion = 21
 tasks.withType(JavaCompile).configureEach {
-    // ensure that the encoding is set to UTF-8, no matter what the system default is
-    // this fixes some edge cases with special characters not displaying correctly
-    // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-    // If Javadoc is generated, this must be specified in that task too.
     it.options.encoding = "UTF-8"
     if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
         it.options.release.set(targetJavaVersion)
@@ -62,19 +78,18 @@ java {
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-    // if it is present.
-    // If you remove this line, sources will not be generated.
     withSourcesJar()
 }
 
 jar {
     from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
+        rename { "LICENSE_DIRECTORSCUT" }
+    }
+    from("licenses/SPRUCELICENSE") {
+        rename { "LICENSE_SPRUCEUI" }
     }
 }
 
-// configure the maven publication
 publishing {
     publications {
         create("mavenJava", MavenPublication) {
@@ -82,7 +97,5 @@ publishing {
             from components.java
         }
     }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {}
 }

@@ -5,7 +5,7 @@ import dev.isxander.yacl3.config.v2.api.SerialEntry;
 import dev.isxander.yacl3.config.v2.api.serializer.GsonConfigSerializerBuilder;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
-
+import org.litkoit.directorscut.utils.types.DetachedCamera;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +19,20 @@ public class CameraConfig {
                     .build())
             .build();
 
-    public int detachedCameraActiveIndex = 0;
+    public int detachedCameraActiveIndex = -1;
+    public int moveToIndex = -1;
     public boolean streamMode = false;
 
-    @SerialEntry
-    public List<DetachedCamera> detachedCameras = new ArrayList<>();
+    public boolean waitPressForMove = false;
+
+    public final List<DetachedCamera> detachedCameras = new ArrayList<>();
 
     @SerialEntry
-    public boolean streamModeAutoSwitch = false;
+    public boolean streamModeAutoSwitch = true;
+
+    @SerialEntry
+    public int fovRenderSteps = 32;
+
+    @SerialEntry
+    public double fovConeSize = 1.0;
 }
