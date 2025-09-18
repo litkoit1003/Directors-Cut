@@ -16,8 +16,8 @@ modrinth {
     projectId = "directors-cut"
     versionNumber = project.mod_version
     versionType = project.mod_version_type
-    uploadFile = jar
-    gameVersions = ["1.21.4"]
+    uploadFile = remapJar
+    gameVersions = ["1.21.5"]
     loaders = ["fabric"]
     dependencies {
         // The scope can be `required`, `optional`, `incompatible`, or `embedded`
