@@ -12,7 +12,7 @@ public class CameraTypeMixin {
     @Inject(method = "isFirstPerson", at = @At("HEAD"), cancellable = true)
     private void overrideIsFirstPerson(CallbackInfoReturnable<Boolean> cir) {
         CameraConfig config = CameraConfig.HANDLER.instance();
-        if (config.detachedCameraActiveIndex != 0) {
+        if (config.detachedCameraActiveIndex != -1) {
             cir.setReturnValue(false);
         }
     }
@@ -20,7 +20,7 @@ public class CameraTypeMixin {
     @Inject(method = "isMirrored", at = @At("HEAD"), cancellable = true)
     private void overrideIsMirrored(CallbackInfoReturnable<Boolean> cir) {
         CameraConfig config = CameraConfig.HANDLER.instance();
-        if (config.detachedCameraActiveIndex != 0) {
+        if (config.detachedCameraActiveIndex != -1) {
             cir.setReturnValue(false);
         }
     }
@@ -28,8 +28,8 @@ public class CameraTypeMixin {
     @Inject(method = "cycle", at = @At("HEAD"))
     private void onCameraCycle(CallbackInfoReturnable<CameraType> cir) {
         CameraConfig config = CameraConfig.HANDLER.instance();
-        if (config.detachedCameraActiveIndex != 0) {
-            config.detachedCameraActiveIndex = 0;
+        if (config.detachedCameraActiveIndex != -1) {
+            config.detachedCameraActiveIndex = -1;
         }
     }
 }

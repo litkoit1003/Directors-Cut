@@ -20,6 +20,10 @@ repositories {
         name = "Terraformers"
         url = "https://maven.terraformersmc.com/"
     }
+    maven {
+        name = "Gegy"
+        url = uri("https://maven.gegy.dev")
+    }
 }
 
 dependencies {
@@ -30,6 +34,7 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
     modImplementation "dev.isxander:yet-another-config-lib:${project.yacl_version}"
     modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+    include(modImplementation("dev.lambdaurora:spruceui:${project.spruceui_version}"))
 }
 
 processResources {
@@ -70,7 +75,10 @@ java {
 
 jar {
     from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
+        rename { "LICENSE_DIRECTORSCUT" }
+    }
+    from("licenses/SPRUCELICENSE") {
+        rename { "LICENSE_SPRUCEUI" }
     }
 }
 
