@@ -38,10 +38,10 @@ public class CameraRenderer {
 
     private static void renderLine(PoseStack matrices, MultiBufferSource bufferSource, Vec3 start, Vec3 end, float r, float g, float a) {
         VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.lines());
-        vertexConsumer.addVertex(matrices.last().pose(), (float) start.x, (float) start.y, (float) start.z)
-                .setColor(r, g, (float) 0.0, a).setNormal(0,1,0);
-        vertexConsumer.addVertex(matrices.last().pose(), (float) end.x, (float) end.y, (float) end.z)
-                .setColor(r, g, (float) 0.0, a).setNormal(0,1,0);
+        vertexConsumer.vertex(matrices.last().pose(), (float) start.x, (float) start.y, (float) start.z)
+                .color(r, g, (float) 0.0, a).normal(0,1,0).endVertex();
+        vertexConsumer.vertex(matrices.last().pose(), (float) end.x, (float) end.y, (float) end.z)
+                .color(r, g, (float) 0.0, a).normal(0,1,0).endVertex();
     }
 
     private static void renderFOV(PoseStack matrices, MultiBufferSource bufferSource, Vec3 dir, float fovDeg) {

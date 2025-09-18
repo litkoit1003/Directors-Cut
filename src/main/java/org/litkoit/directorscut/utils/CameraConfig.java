@@ -12,7 +12,7 @@ import java.util.List;
 
 public class CameraConfig {
     public static ConfigClassHandler<CameraConfig> HANDLER = ConfigClassHandler.createBuilder(CameraConfig.class)
-            .id(ResourceLocation.fromNamespaceAndPath("directorscut", "directorscut-config"))
+            .id(new ResourceLocation("directorscut", "directorscut-config"))
             .serializer(config -> GsonConfigSerializerBuilder.create(config)
                     .setPath(FabricLoader.getInstance().getConfigDir().resolve("directorscut-config.json5"))
                     .setJson5(true)

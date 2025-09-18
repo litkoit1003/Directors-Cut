@@ -21,7 +21,7 @@ public class GameRendererMixin {
     }
 
     @ModifyReturnValue(method = "getFov", at = @At("RETURN"))
-    private float modifyFovReturnValue(float original) {
+    private double modifyFovReturnValue(double original) {
         CameraConfig config = CameraConfig.HANDLER.instance();
 
         if (config.detachedCameraActiveIndex != -1) {

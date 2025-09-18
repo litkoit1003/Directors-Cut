@@ -33,7 +33,7 @@ public abstract class CameraMixin {
     }
 
     @Inject(method = "move", at = @At("HEAD"), cancellable = true)
-    private void preventCameraMovement(float f, float g, float h, CallbackInfo ci) {
+    private void preventCameraMovement(double d, double e, double f, CallbackInfo ci) {
         CameraConfig config = CameraConfig.HANDLER.instance();
         if (config.detachedCameraActiveIndex != -1) {
             ci.cancel();
