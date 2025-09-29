@@ -5,6 +5,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import org.litkoit.directorscut.gui.CameraListScreen;
 import org.litkoit.directorscut.utils.types.DetachedCamera;
+import org.litkoit.directorscut.utils.types.KeyFrame;
+import org.litkoit.directorscut.utils.types.KeyFrameType;
+
+import java.util.List;
 
 public class DetachedCameraControl {
     public static void activateFixedCamera(Minecraft mc, int index) {
@@ -46,11 +50,15 @@ public class DetachedCameraControl {
         if (config.moveToIndex == -1) return;
 
         if (config.detachedCameras.get(index) instanceof DetachedCamera oldCamera) {
+            List<KeyFrame> keyFrames = oldCamera.keyframes();
+            keyFrames.set(0, new KeyFrame(mc.player.getX(), mc.player.getEyeY(), mc.player.getZ(), mc.player.getXRot(),
+                    Mth.wrapDegrees(mc.player.getYRot()), oldCamera.fov(), 0.0, KeyFrameType.START));
+
             config.detachedCameras.set(index, new DetachedCamera(mc.player.getX(),
                     mc.player.getEyeY(),
                     mc.player.getZ(),
                     mc.player.getXRot(),
-                    Mth.wrapDegrees(mc.player.getYRot()), oldCamera.fov(), oldCamera.keybind()));
+                    Mth.wrapDegrees(mc.player.getYRot()), oldCamera.fov(), oldCamera.keybind(), keyFrames));
             mc.setScreen(new CameraListScreen(config.moveToIndex));
             config.moveToIndex = -1;
         }
