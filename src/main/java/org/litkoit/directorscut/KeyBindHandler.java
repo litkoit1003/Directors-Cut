@@ -20,6 +20,8 @@ public class KeyBindHandler {
     public static KeyMapping MOVE_TO_VIEW;
     public static KeyMapping STREAMER_MODE;
 
+    private static boolean waitingInCamera = false;
+
     private static final Set<Integer> pressedKeys = new HashSet<>();
 
     public static void registerKeyBindings() {
@@ -74,13 +76,49 @@ public class KeyBindHandler {
                         DetachedCameraControl.toggleFixedCamera(mc, i);
                     } else {
                         DetachedCameraControl.activateFixedCamera(mc, i);
-                        config.detachedCameraActiveIndex = i;
                     }
                     break;
                 } else if (!isPressed && wasPressed) {
                     pressedKeys.remove(keyCode);
                 }
             }
+        }
+
+        if (mc.screen == null) {
+            long window = mc.getWindow().getWindow();
+            boolean isRMBPressed = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_RIGHT) == GLFW.GLFW_PRESS;
+            boolean isLMBPressed = GLFW.glfwGetMouseButton(window, GLFW.GLFW_MOUSE_BUTTON_LEFT) == GLFW.GLFW_PRESS;
+
+            if (isRMBPressed && !pressedKeys.contains(GLFW.GLFW_MOUSE_BUTTON_RIGHT) && !config.streamMode) {
+                pressedKeys.add(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+
+                DetachedCamera hovered = org.litkoit.directorscut.render.CameraTooltipRenderer.getCurrentHoveredCamera();
+                if (hovered != null) {
+                    onRightClickCamera(mc, hovered);
+                }
+            } else if (!isRMBPressed) {
+                pressedKeys.remove(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+            }
+
+            if (isLMBPressed && !pressedKeys.contains(GLFW.GLFW_MOUSE_BUTTON_LEFT)) {
+                pressedKeys.add(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+
+                DetachedCamera hovered = org.litkoit.directorscut.render.CameraTooltipRenderer.getCurrentHoveredCamera();
+                if (waitingInCamera) {
+                    DetachedCameraControl.deactivateFixedCamera(mc);
+                    waitingInCamera = false;
+                    return;
+                }
+                if (hovered != null && !config.streamMode) {
+                    onLeftClickCamera(mc, hovered);
+                }
+            } else if (!isLMBPressed) {
+                pressedKeys.remove(GLFW.GLFW_MOUSE_BUTTON_LEFT);
+            }
+        }
+
+        if (mc.options.keyTogglePerspective.isDown()) {
+            DetachedCameraControl.deactivateFixedCamera(mc);
         }
 
         if (config.waitPressForMove && MOVE_TO_VIEW.consumeClick()) {
@@ -90,6 +128,15 @@ public class KeyBindHandler {
         if (STREAMER_MODE.consumeClick()) {
             config.streamMode = !config.streamMode;
         }
+    }
+
+    private static void onLeftClickCamera(Minecraft mc, DetachedCamera camera) {
+        DetachedCameraControl.activateFixedCamera(mc, CameraConfig.HANDLER.instance().detachedCameras.indexOf(camera));
+        waitingInCamera = true;
+    }
+
+    private static void onRightClickCamera(Minecraft mc, DetachedCamera camera) {
+        mc.setScreen(new CameraListScreen(CameraConfig.HANDLER.instance().detachedCameras.indexOf(camera)));
     }
 }
 

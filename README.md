@@ -13,8 +13,8 @@ With this mod you can broadcast live from several angles without using commands.
 ## Features
 - Detached Cameras (up to 50)
 - Visual display of cameras
-- ~~Camera Animations~~ (**Will be added to updates**)
-- ~~? Key Frame Types~~ (**Will be added to updates**)
+- ~~Camera Animations~~ (**It will be added in version v0.2.0**)
+- ~~? Key Frame Types~~ (**It will be added in version v0.2.0**)
 
 ### Detached Cameras
 Detached Cameras - The mod's main feature. 
@@ -25,7 +25,7 @@ They allow you to change camera angles directly in-game with the press of a butt
 ### Visual display of cameras
 Cameras are visually visible in the game to make them easier to find.
 
-![Mod Render DEMO](https://i.imgur.com/YldWJ6t.gif)
+![Mod Render DEMO](https://i.imgur.com/PprSNuh.gif)
 
 ## Build
 1. Clone the repository
