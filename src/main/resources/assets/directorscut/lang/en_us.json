@@ -15,6 +15,18 @@
   "gui.directorscut.config.fov_steps_name": "steps",
   "gui.directorscut.config.fov_cone_size": "FOV Cone Size",
   "gui.directorscut.config.fov_cone_size_description": "The size of the FOV cone in the game",
+  "gui.directorscut.config.render_group": "Render Settings",
+  "gui.directorscut.config.render_group_description": "Camera rendering settings.",
+  "gui.directorscut.config.fov_cone_color": "FOV Cone Color",
+  "gui.directorscut.config.fov_cone_color_description": "Color of the FOV cone when rendering the camera.",
+  "gui.directorscut.config.camera_line_size": "Camera Direction Line Size",
+  "gui.directorscut.config.camera_line_size_description": "Size of the camera direction line during rendering.",
+  "gui.directorscut.config.camera_line_color": "Camera Direction Line Color",
+  "gui.directorscut.config.camera_line_color_description": "Color of the camera's direction line.",
+  "gui.directorscut.config.base_camera_color": "Base Camera Color",
+  "gui.directorscut.config.base_camera_color_description": "Primary color of the camera.",
+  "gui.directorscut.config.hover_camera_color": "Hover Camera Color",
+  "gui.directorscut.config.hover_camera_color_description": "Color of the camera when hovered over.",
 
   "gui.directorscut.camera_list.title": "Camera Settings - Slot %d",
   "gui.directorscut.camera_list.create_camera": "Create New Camera",
@@ -37,6 +49,16 @@
   "gui.directorscut.camera_list.reset": "Reset",
   "gui.directorscut.camera_list.delete": "Delete",
   "gui.directorscut.camera_list.press_key": "Press any key...",
+  "gui.directorscut.camera_list.animations": "Animation",
+  "gui.directorscut.camera_list.open_keyframe_editor": "Open Keyframe Editor",
+  "gui.directorscut.camera_list.keyframe_editor_tooltip": "Opens the keyframe editor menu for this camera.",
+
+  "gui.directorscut.tooltip.camera": "Camera",
+  "gui.directorscut.tooltip.edit": "Right-click to edit",
+  "gui.directorscut.tooltip.position": "Position: X: %s, Y: %s, Z: %s",
+  "gui.directorscut.tooltip.rotation": "Rotation: Y: %s°, X: %s°",
+  "gui.directorscut.tooltip.fov": "FOV: %s°",
+  "gui.directorscut.tooltip.activate": "Left-click to activate",
 
   "msg.directorscut.press_key_to_move": "Press the \"Move to Camera View\" key to reposition the camera."
 }

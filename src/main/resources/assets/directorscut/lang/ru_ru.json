@@ -15,6 +15,18 @@
   "gui.directorscut.config.fov_steps_name": "шагов",
   "gui.directorscut.config.fov_cone_size": "Размер конуса FOV",
   "gui.directorscut.config.fov_cone_size_description": "Размер конуса FOV в игре",
+  "gui.directorscut.config.render_group": "Настройки отрисовки.",
+  "gui.directorscut.config.render_group_description": "Настройки отрисовки камер.",
+  "gui.directorscut.config.fov_cone_color": "Цвет конуса поля зрения",
+  "gui.directorscut.config.fov_cone_color_description": "Цвет конуса поля зрения который будет использоваться при отрисовке.",
+  "gui.directorscut.config.camera_line_size": "Размер линии направления",
+  "gui.directorscut.config.camera_line_size_description": "Размер линии направления камеры который будет использоваться при отрисовке.",
+  "gui.directorscut.config.camera_line_color": "Цвет линии направления",
+  "gui.directorscut.config.camera_line_color_description": "Цвет линии направления который будет использоваться при отрисовке.",
+  "gui.directorscut.config.base_camera_color": "Основной цвет камеры",
+  "gui.directorscut.config.base_camera_color_description": "Основной цвет камеры который будет использоваться при отрисовке.",
+  "gui.directorscut.config.hover_camera_color": "Цвет камеры при наведении",
+  "gui.directorscut.config.hover_camera_color_description": "Цвет камеры который используется при наведении на камеру.",
 
   "gui.directorscut.camera_list.title": "Настройки камеры — Слот %d",
   "gui.directorscut.camera_list.create_camera": "Создать новую камеру",
@@ -37,6 +49,16 @@
   "gui.directorscut.camera_list.reset": "Сбросить",
   "gui.directorscut.camera_list.delete": "Удалить",
   "gui.directorscut.camera_list.press_key": "Нажмите любую клавишу...",
+  "gui.directorscut.camera_list.animations": "Анимации",
+  "gui.directorscut.camera_list.open_keyframe_editor": "Открыть редактор ключевых кадров",
+  "gui.directorscut.camera_list.keyframe_editor_tooltip": "Открывает редактор ключевых кадров для этой камеры.",
+
+  "gui.directorscut.tooltip.camera": "Камера",
+  "gui.directorscut.tooltip.edit": "Нажмите ПКМ что-бы редактировать",
+  "gui.directorscut.tooltip.position": "Позиция: X: %s, Y: %s, Z: %s",
+  "gui.directorscut.tooltip.rotation": "Поворот: Y: %s°, X: %s°",
+  "gui.directorscut.tooltip.fov": "Поле зрения: %s°",
+  "gui.directorscut.tooltip.activate": "Нажмите ЛКМ что-бы активировать",
 
   "msg.directorscut.press_key_to_move": "Нажмите клавишу «Переместить к виду камеры», чтобы переместить камеру."
 }

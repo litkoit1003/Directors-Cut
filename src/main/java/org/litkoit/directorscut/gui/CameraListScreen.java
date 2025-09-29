@@ -16,7 +16,12 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import org.litkoit.directorscut.utils.CameraConfig;
 import org.litkoit.directorscut.utils.types.DetachedCamera;
+import org.litkoit.directorscut.utils.types.KeyFrame;
+import org.litkoit.directorscut.utils.types.KeyFrameType;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class CameraListScreen extends SpruceScreen {
@@ -26,6 +31,7 @@ public class CameraListScreen extends SpruceScreen {
     private double tempX, tempY, tempZ;
     private float tempXRot, tempYRot, tempFov;
     private int tempKeybind;
+    private List<KeyFrame> tempKeyFrames;
     private boolean waitingForKey = false;
     private SpruceButtonWidget keyButton;
 
@@ -75,6 +81,7 @@ public class CameraListScreen extends SpruceScreen {
         tempYRot = camera.yRot();
         tempFov = camera.fov();
         tempKeybind = camera.keybind();
+        tempKeyFrames = camera.keyframes();
     }
 
     private void buildCameraEditInterface() {
@@ -119,6 +126,10 @@ public class CameraListScreen extends SpruceScreen {
 
         optionList.addSingleOptionEntry(createKeybindOption());
 
+        //optionList.addSingleOptionEntry(new SpruceSeparatorOption("gui.directorscut.camera_list.animations", true, null));
+        // TODO Animation editor
+        //optionList.addSingleOptionEntry(createKeyFrameEditorLink());
+
         mainContainer.addChild(optionList);
         this.addRenderableWidget(mainContainer);
 
@@ -139,6 +150,16 @@ public class CameraListScreen extends SpruceScreen {
                 value -> setter.accept(value.floatValue()),
                 option -> Component.literal(name + ": " + String.format("%.1f°", getter.get())),
                 Component.translatable("gui.directorscut.camera_list.rotation_tooltip"));
+    }
+
+    private SpruceOption createKeyFrameEditorLink() {
+        return SpruceSimpleActionOption.of("gui.directorscut.camera_list.open_keyframe_editor",
+                this::openKeyframeEditor,
+                Component.translatable("gui.directorscut.camera_list.keyframe_editor_tooltip"));
+    }
+
+    private void openKeyframeEditor(SpruceButtonWidget btn) {
+
     }
 
     private SpruceOption createFovSlider() {
@@ -281,7 +302,11 @@ public class CameraListScreen extends SpruceScreen {
             config.detachedCameras.add(null);
         }
 
-        DetachedCamera newCamera = new DetachedCamera(0, 70, 0, 0, 0, 70.0f, GLFW.GLFW_KEY_UNKNOWN);
+        List<KeyFrame> keyFrames = new ArrayList<>();
+
+        keyFrames.add(new KeyFrame(0, 70, 0, 0, 0, 70.0f, 0.0, KeyFrameType.START));
+
+        DetachedCamera newCamera = new DetachedCamera(0, 70, 0, 0, 0, 70.0f, GLFW.GLFW_KEY_UNKNOWN, keyFrames);
         config.detachedCameras.set(slot, newCamera);
         CameraConfig.HANDLER.save();
 
@@ -290,7 +315,7 @@ public class CameraListScreen extends SpruceScreen {
 
     private void saveChanges() {
         CameraConfig config = CameraConfig.HANDLER.instance();
-        DetachedCamera updatedCamera = new DetachedCamera(tempX, tempY, tempZ, tempXRot, tempYRot, tempFov, tempKeybind);
+        DetachedCamera updatedCamera = new DetachedCamera(tempX, tempY, tempZ, tempXRot, tempYRot, tempFov, tempKeybind, tempKeyFrames);
 
         config.detachedCameras.set(slot, updatedCamera);
         CameraConfig.HANDLER.save();
@@ -312,6 +337,7 @@ public class CameraListScreen extends SpruceScreen {
         CameraConfig config = CameraConfig.HANDLER.instance();
         if (config.detachedCameras.size() > slot) {
             config.detachedCameras.set(slot, null);
+            config.detachedCameraActiveIndex = -1;
             CameraConfig.HANDLER.save();
         }
 

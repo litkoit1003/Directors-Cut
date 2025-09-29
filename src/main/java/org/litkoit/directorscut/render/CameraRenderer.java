@@ -1,81 +1,235 @@
 package org.litkoit.directorscut.render;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import net.minecraft.client.Camera;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.AABB;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.litkoit.directorscut.utils.CameraConfig;
 import org.litkoit.directorscut.utils.types.DetachedCamera;
 
-import java.util.ArrayList;
 import java.util.List;
 
+@Environment(EnvType.CLIENT)
 public class CameraRenderer {
+    //private static final ResourceLocation CAMERA_TEXTURE = ResourceLocation.fromNamespaceAndPath("directorscut", "textures/camera_head.png");
+    private static final Minecraft CLIENT = Minecraft.getInstance();
 
-    public static void renderCameras(PoseStack matrices, MultiBufferSource bufferSource, Camera camera) {
-        Vec3 camPos = camera.getPosition();
+    private final boolean renderDebugInfo;
+
+    public CameraRenderer(boolean renderDebugInfo) {
+        this.renderDebugInfo = renderDebugInfo;
+    }
+
+    public void render(PoseStack matrices, DetachedCamera camera) {
+        if (camera == null || CLIENT.player == null) return;
+
+        Vec3 cameraPos = CLIENT.gameRenderer.getMainCamera().getPosition();
+
+        matrices.pushPose();
+
+        double relX = camera.x() - cameraPos.x;
+        double relY = camera.y() - cameraPos.y;
+        double relZ = camera.z() - cameraPos.z;
+
+        matrices.translate(relX, relY, relZ);
+
+        matrices.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-camera.yRot()));
+        matrices.mulPose(com.mojang.math.Axis.XP.rotationDegrees(camera.xRot()));
+
+        boolean isHovered = isMouseHoveringCamera(camera);
+        renderCameraBody(matrices, isHovered);
+
+        if (renderDebugInfo) {
+            renderViewDirection(matrices);
+        }
+
+        renderFOVCone(matrices, camera.fov());
+
+        matrices.popPose();
+    }
+
+    private boolean isMouseHoveringCamera(DetachedCamera camera) {
+        if (CLIENT.player == null || CameraConfig.HANDLER.instance().streamMode) {
+            return false;
+        }
+
+        Vec3 playerEyePos = CLIENT.player.getEyePosition();
+        Vec3 lookDirection = CLIENT.player.getViewVector(1.0f);
+
+        float cameraScale = CameraConfig.HANDLER.instance().cameraScale;
+        float size = cameraScale * 0.5f;
+
+        Vec3 cameraWorldPos = new Vec3(camera.x(), camera.y(), camera.z());
+        AABB cameraBounds = new AABB(
+                cameraWorldPos.x - size, cameraWorldPos.y - size, cameraWorldPos.z - size,
+                cameraWorldPos.x + size, cameraWorldPos.y + size, cameraWorldPos.z + size
+        );
+
+        double maxDistance = 100.0;
+        Vec3 rayEnd = playerEyePos.add(lookDirection.scale(maxDistance));
+
+        return cameraBounds.clip(playerEyePos, rayEnd).isPresent();
+    }
+
+    private void renderCameraBody(PoseStack matrices, boolean isHovered) {
+        Matrix4f matrix = matrices.last().pose();
+
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.enableDepthTest();
+
+        MultiBufferSource.BufferSource bufferSource = CLIENT.renderBuffers().bufferSource();
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.lines());
+
+        float camera_scale = CameraConfig.HANDLER.instance().cameraScale;
+        float size = camera_scale * 0.5f;
+
         CameraConfig config = CameraConfig.HANDLER.instance();
 
-        List<DetachedCamera> cameras = new ArrayList<>(config.detachedCameras);
+        int color = isHovered ? config.cameraHoverColor.getRGB() : config.cameraBaseColor.getRGB();
 
-        for (DetachedCamera dc : cameras) {
-            if (dc == null) continue;
+        int r = (color >> 16) & 0xFF;
+        int g = (color >> 8) & 0xFF;
+        int b = color & 0xFF;
+        int a = (color >> 24) & 0xFF;
 
-            matrices.pushPose();
-            matrices.translate(dc.x() - camPos.x, dc.y() - camPos.y, dc.z() - camPos.z);
+        renderWireframeCube(vertexConsumer, matrix, size, r, g, b, a);
 
-            Vec3 dir = directionFromRotation(dc.xRot(), dc.yRot());
-            Vec3 end = dir.scale(2.0);
-
-            renderLine(matrices, bufferSource, new Vec3(0, 0, 0), end, 1f, 0f, 1f);
-            renderFOV(matrices, bufferSource, dir, dc.fov());
-
-            matrices.popPose();
-        }
+        bufferSource.endBatch(RenderType.lines());
+        RenderSystem.disableBlend();
     }
 
-    private static void renderLine(PoseStack matrices, MultiBufferSource bufferSource, Vec3 start, Vec3 end, float r, float g, float a) {
+    private void renderWireframeCube(VertexConsumer vertexConsumer, Matrix4f matrix, float size, int r, int g, int b, int a) {
+        addColoredVertex(vertexConsumer, matrix, -size, -size, size, r, g, b, a);
+        addColoredVertex(vertexConsumer, matrix, size, -size, size, r, g, b, a);
+
+        addColoredVertex(vertexConsumer, matrix, size, -size, size, r, g, b, a);
+        addColoredVertex(vertexConsumer, matrix, size, size, size, r, g, b, a);
+
+        addColoredVertex(vertexConsumer, matrix, size, size, size, r, g, b, a);
+        addColoredVertex(vertexConsumer, matrix, -size, size, size, r, g, b, a);
+
+        addColoredVertex(vertexConsumer, matrix, -size, size, size, r, g, b, a);
+        addColoredVertex(vertexConsumer, matrix, -size, -size, size, r, g, b, a);
+
+        addColoredVertex(vertexConsumer, matrix, -size, -size, -size, r, g, b, a);
+        addColoredVertex(vertexConsumer, matrix, size, -size, -size, r, g, b, a);
+
+        addColoredVertex(vertexConsumer, matrix, size, -size, -size, r, g, b, a);
+        addColoredVertex(vertexConsumer, matrix, size, size, -size, r, g, b, a);
+
+        addColoredVertex(vertexConsumer, matrix, size, size, -size, r, g, b, a);
+        addColoredVertex(vertexConsumer, matrix, -size, size, -size, r, g, b, a);
+
+        addColoredVertex(vertexConsumer, matrix, -size, size, -size, r, g, b, a);
+        addColoredVertex(vertexConsumer, matrix, -size, -size, -size, r, g, b, a);
+
+        addColoredVertex(vertexConsumer, matrix, -size, -size, size, r, g, b, a);
+        addColoredVertex(vertexConsumer, matrix, -size, -size, -size, r, g, b, a);
+
+        addColoredVertex(vertexConsumer, matrix, size, -size, size, r, g, b, a);
+        addColoredVertex(vertexConsumer, matrix, size, -size, -size, r, g, b, a);
+
+        addColoredVertex(vertexConsumer, matrix, size, size, size, r, g, b, a);
+        addColoredVertex(vertexConsumer, matrix, size, size, -size, r, g, b, a);
+
+        addColoredVertex(vertexConsumer, matrix, -size, size, size, r, g, b, a);
+        addColoredVertex(vertexConsumer, matrix, -size, size, -size, r, g, b, a);
+    }
+
+    private void renderViewDirection(PoseStack matrices) {
+        Matrix4f matrix = matrices.last().pose();
+
+        RenderSystem.lineWidth(3.0f);
+        RenderSystem.disableDepthTest();
+
+        CameraConfig config = CameraConfig.HANDLER.instance();
+
+        MultiBufferSource.BufferSource bufferSource = CLIENT.renderBuffers().bufferSource();
         VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.lines());
-        vertexConsumer.addVertex(matrices.last().pose(), (float) start.x, (float) start.y, (float) start.z)
-                .setColor(r, g, (float) 0.0, a).setNormal(0,1,0);
-        vertexConsumer.addVertex(matrices.last().pose(), (float) end.x, (float) end.y, (float) end.z)
-                .setColor(r, g, (float) 0.0, a).setNormal(0,1,0);
+
+        addColoredVertex(vertexConsumer, matrix, 0f, 0f, 0f, config.cameraLineColor.getRGB());
+        addColoredVertex(vertexConsumer, matrix, 0f, 0f, config.cameraLineSize, config.cameraLineColor.getRGB());
+
+        bufferSource.endBatch(RenderType.lines());
+
+        RenderSystem.enableDepthTest();
+        RenderSystem.lineWidth(1.0f);
     }
 
-    private static void renderFOV(PoseStack matrices, MultiBufferSource bufferSource, Vec3 dir, float fovDeg) {
-        int circleSteps = CameraConfig.HANDLER.instance().fovRenderSteps;
-        float fovRad = (float) Math.toRadians(fovDeg / 2);
+    private void renderFOVCone(PoseStack matrices, float fov) {
+        Matrix4f matrix = matrices.last().pose();
 
-        Vec3 up = Math.abs(dir.y) > 0.9 ? new Vec3(1, 0, 0) : new Vec3(0, 1, 0);
-        Vec3 right = dir.cross(up).normalize();
-        Vec3 upVec = right.cross(dir).normalize();
+        RenderSystem.lineWidth(2.0f);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableDepthTest();
 
-        Vec3 prev = null;
-        for (int i = 0; i <= circleSteps; i++) {
-            double angle = 2 * Math.PI * i / circleSteps;
+        MultiBufferSource.BufferSource bufferSource = CLIENT.renderBuffers().bufferSource();
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.lines());
 
-            double dx = Math.cos(angle) * Math.sin(fovRad);
-            double dy = Math.sin(angle) * Math.sin(fovRad);
-            double dz = Math.cos(fovRad);
+        float distance = (float) CameraConfig.HANDLER.instance().fovConeSize;
+        float halfFov = fov * 0.5f;
+        float tanFov = (float) Math.tan(Math.toRadians(halfFov));
+        float coneRadius = distance * tanFov;
 
-            Vec3 offset = right.scale(dx).add(upVec.scale(dy)).add(dir.normalize().scale(dz));
-            Vec3 point = offset.normalize().scale(CameraConfig.HANDLER.instance().fovConeSize);
+        int segments = CameraConfig.HANDLER.instance().fovRenderSteps;
+        Vector3f origin = new Vector3f(0, 0, 0);
 
-            renderLine(matrices, bufferSource, Vec3.ZERO, point, 0f, 1f, 0.6f);
+        for (int i = 0; i < segments; i++) {
+            float angle = (float) (2 * Math.PI * i / segments);
+            float nextAngle = (float) (2 * Math.PI * (i + 1) / segments);
 
-            if (prev != null) {
-                renderLine(matrices, bufferSource, prev, point, 0f, 1f, 0.6f);
+            float x1 = coneRadius * (float) Math.cos(angle);
+            float y1 = coneRadius * (float) Math.sin(angle);
+            float x2 = coneRadius * (float) Math.cos(nextAngle);
+            float y2 = coneRadius * (float) Math.sin(nextAngle);
+
+            CameraConfig config = CameraConfig.HANDLER.instance();
+
+            if (i % 4 == 0) {
+                addColoredVertex(vertexConsumer, matrix, origin.x(), origin.y(), origin.z(), config.fovConeColor.getRGB());
+                addColoredVertex(vertexConsumer, matrix, x1, y1, distance, config.fovConeColor.getRGB());
             }
-            prev = point;
+
+            addColoredVertex(vertexConsumer, matrix, x1, y1, distance, config.fovConeColor.getRGB());
+            addColoredVertex(vertexConsumer, matrix, x2, y2, distance, config.fovConeColor.getRGB());
         }
+
+        bufferSource.endBatch(RenderType.lines());
+
+        RenderSystem.enableDepthTest();
+        RenderSystem.disableBlend();
+        RenderSystem.lineWidth(1.0f);
     }
 
-    public static Vec3 directionFromRotation(float pitch, float yaw) {
-        float f = -Mth.sin((float) Math.toRadians(yaw)) * Mth.cos((float) Math.toRadians(pitch));
-        float g = -Mth.sin((float) Math.toRadians(pitch));
-        float h = Mth.cos((float) Math.toRadians(yaw)) * Mth.cos((float) Math.toRadians(pitch));
-        return new Vec3(f, g, h);
+    private void addColoredVertex(VertexConsumer vertexConsumer, Matrix4f matrix, float x, float y, float z, int color) {
+        int a = (color >> 24) & 0xFF;
+        int r = (color >> 16) & 0xFF;
+        int g = (color >> 8) & 0xFF;
+        int b = color & 0xFF;
+
+        vertexConsumer.addVertex(matrix, x, y, z)
+                .setColor(r, g, b, a).setNormal(0.0f, 1.0f, 0.0f);
+    }
+
+    private void addColoredVertex(VertexConsumer vertexConsumer, Matrix4f matrix, float x, float y, float z, int r, int g, int b, int a) {
+        vertexConsumer.addVertex(matrix, x, y, z)
+                .setColor(r, g, b, a).setNormal(0.0f, 1.0f, 0.0f);
+    }
+
+    public void renderAllCameras(PoseStack matrices, List<DetachedCamera> cameras) {
+        if (cameras == null || cameras.isEmpty()) return;
+
+        for (DetachedCamera camera : cameras) {
+            render(matrices, camera);
+        }
     }
 }
