@@ -24,6 +24,19 @@ public class CameraTooltipRenderer {
 
     public static void renderTooltips(GuiGraphics guiGraphics, List<DetachedCamera> cameras) {
         if (cameras == null || cameras.isEmpty() || CLIENT.player == null) {
+            currentHoveredCamera = null;
+            return;
+        }
+
+        boolean hasNonNull = false;
+        for (DetachedCamera c : cameras) {
+            if (c != null) {
+                hasNonNull = true;
+                break;
+            }
+        }
+        if (!hasNonNull) {
+            currentHoveredCamera = null;
             return;
         }
 
@@ -49,6 +62,8 @@ public class CameraTooltipRenderer {
         Vec3 rayEnd = playerEyePos.add(lookDirection.scale(maxDistance));
 
         for (DetachedCamera camera : cameras) {
+            if (camera == null) continue;
+
             if (isMouseHoveringCamera(camera, playerEyePos, rayEnd)) {
                 return camera;
             }
@@ -58,6 +73,8 @@ public class CameraTooltipRenderer {
     }
 
     private static boolean isMouseHoveringCamera(DetachedCamera camera, Vec3 rayStart, Vec3 rayEnd) {
+        if (camera == null) return false;
+
         float cameraScale = CameraConfig.HANDLER.instance().cameraScale;
         float size = cameraScale * 0.5f;
 
