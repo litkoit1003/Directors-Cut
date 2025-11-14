@@ -62,7 +62,7 @@ public class KeyBindHandler {
             try {
                 keyCode = camera.keybind();
             } catch (NullPointerException e) {
-                return;
+                continue;
             }
 
             if (keyCode != GLFW.GLFW_KEY_UNKNOWN) {
