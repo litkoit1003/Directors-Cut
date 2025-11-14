@@ -117,9 +117,13 @@ public class KeyBindHandler {
             }
         }
 
-        if (mc.options.keyTogglePerspective.isDown()) {
-            DetachedCameraControl.deactivateFixedCamera(mc);
+        if (CameraConfig.HANDLER.instance().detachedCameraActiveIndex != -1) {
+            if (mc.options.keyTogglePerspective.consumeClick()) {
+                DetachedCameraControl.deactivateFixedCamera(mc);
+                return;
+            }
         }
+
 
         if (config.waitPressForMove && MOVE_TO_VIEW.consumeClick()) {
             DetachedCameraControl.moveToView(mc, config.moveToIndex);
