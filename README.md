@@ -1,6 +1,6 @@
 # Director's Cut
 
-**THIS MOD IS CURRENTLY IN DEVELOPMENT.**
+**THIS MOD IS CURRENTLY IN ARCHIVE! UPDATED VERSION IS https://github.com/litkoit1003/directors-cut-workstation**
 
 Director's Cut - Client-side mod that will allow you to control your camera in an expanded way. 
 With this mod you can broadcast live from several angles without using commands.
